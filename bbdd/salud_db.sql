@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Servidor: localhost
--- Tiempo de generación: 01-04-2024 a las 20:24:48
--- Versión del servidor: 10.4.28-MariaDB
--- Versión de PHP: 8.0.28
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 02-04-2024 a las 13:08:14
+-- Versión del servidor: 10.4.32-MariaDB
+-- Versión de PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -134,7 +134,7 @@ CREATE TABLE `04_tomas_diarias` (
   `fecha_tto` date NOT NULL DEFAULT current_timestamp(),
   `toma_realizada` tinyint(1) DEFAULT 1,
   `toma_retrasada` tinyint(1) DEFAULT 0,
-  `toma_perdida` tinyint(3) DEFAULT 0
+  `toma_perdida` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -142,30 +142,16 @@ CREATE TABLE `04_tomas_diarias` (
 --
 
 INSERT INTO `04_tomas_diarias` (`id_toma_diaria`, `administracion_id`, `fecha_tto`, `toma_realizada`, `toma_retrasada`, `toma_perdida`) VALUES
-(1, 1, '2024-04-01', 0, 0, 1),
-(2, 1, '2024-04-01', 1, 0, 0),
-(3, 2, '2024-04-01', 0, 1, 0),
-(4, 3, '2024-04-01', 0, 0, 1);
+(4, 1, '2024-04-02', 0, 0, 1),
+(5, 1, '2024-04-02', 1, 0, 0);
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `05_tomas_perdidas`
+-- Estructura de tabla para la tabla `05_motivos_perdidas`
 --
 
-CREATE TABLE `05_tomas_perdidas` (
-  `toma_perdida_id` int(3) NOT NULL,
-  `toma_diaria_id` int(11) NOT NULL,
-  `motivo_perdida_id` int(3) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `06_motivos_perdidas`
---
-
-CREATE TABLE `06_motivos_perdidas` (
+CREATE TABLE `05_motivos_perdidas` (
   `id_motivo_perdida` int(3) NOT NULL,
   `olvido` tinyint(1) DEFAULT 0,
   `no_disponible` tinyint(1) DEFAULT 0,
@@ -173,16 +159,24 @@ CREATE TABLE `06_motivos_perdidas` (
   `malestar` tinyint(1) DEFAULT 0,
   `dificultad` tinyint(1) DEFAULT 0,
   `coste` tinyint(1) DEFAULT 0,
-  `otros` tinyint(1) DEFAULT 0
+  `otros` tinyint(1) DEFAULT 0,
+  `toma_diaria_id` int(3) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `05_motivos_perdidas`
+--
+
+INSERT INTO `05_motivos_perdidas` (`id_motivo_perdida`, `olvido`, `no_disponible`, `agotado`, `malestar`, `dificultad`, `coste`, `otros`, `toma_diaria_id`) VALUES
+(1, NULL, 0, 0, 0, 0, 0, 0, 4);
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `RecoveryTokens`
+-- Estructura de tabla para la tabla `recoverytokens`
 --
 
-CREATE TABLE `RecoveryTokens` (
+CREATE TABLE `recoverytokens` (
   `id` int(11) NOT NULL,
   `token` varchar(255) NOT NULL,
   `paciente_id` int(8) UNSIGNED NOT NULL,
@@ -224,23 +218,16 @@ ALTER TABLE `04_tomas_diarias`
   ADD KEY `administracion_id` (`administracion_id`);
 
 --
--- Indices de la tabla `05_tomas_perdidas`
+-- Indices de la tabla `05_motivos_perdidas`
 --
-ALTER TABLE `05_tomas_perdidas`
-  ADD PRIMARY KEY (`toma_perdida_id`),
-  ADD KEY `toma_diaria_id` (`toma_diaria_id`),
-  ADD KEY `motivo_perdida_id` (`motivo_perdida_id`);
+ALTER TABLE `05_motivos_perdidas`
+  ADD PRIMARY KEY (`id_motivo_perdida`),
+  ADD KEY `toma_diaria_id` (`toma_diaria_id`);
 
 --
--- Indices de la tabla `06_motivos_perdidas`
+-- Indices de la tabla `recoverytokens`
 --
-ALTER TABLE `06_motivos_perdidas`
-  ADD PRIMARY KEY (`id_motivo_perdida`);
-
---
--- Indices de la tabla `RecoveryTokens`
---
-ALTER TABLE `RecoveryTokens`
+ALTER TABLE `recoverytokens`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `token` (`token`),
   ADD KEY `user_id` (`paciente_id`);
@@ -271,24 +258,18 @@ ALTER TABLE `03_administraciones`
 -- AUTO_INCREMENT de la tabla `04_tomas_diarias`
 --
 ALTER TABLE `04_tomas_diarias`
-  MODIFY `id_toma_diaria` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_toma_diaria` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT de la tabla `05_tomas_perdidas`
+-- AUTO_INCREMENT de la tabla `05_motivos_perdidas`
 --
-ALTER TABLE `05_tomas_perdidas`
-  MODIFY `toma_perdida_id` int(3) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `05_motivos_perdidas`
+  MODIFY `id_motivo_perdida` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT de la tabla `06_motivos_perdidas`
+-- AUTO_INCREMENT de la tabla `recoverytokens`
 --
-ALTER TABLE `06_motivos_perdidas`
-  MODIFY `id_motivo_perdida` int(3) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `RecoveryTokens`
---
-ALTER TABLE `RecoveryTokens`
+ALTER TABLE `recoverytokens`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -309,10 +290,10 @@ ALTER TABLE `04_tomas_diarias`
   ADD CONSTRAINT `04_tomas_diarias_ibfk_1` FOREIGN KEY (`administracion_id`) REFERENCES `03_administraciones` (`id_administracion`);
 
 --
--- Filtros para la tabla `RecoveryTokens`
+-- Filtros para la tabla `05_motivos_perdidas`
 --
-ALTER TABLE `RecoveryTokens`
-  ADD CONSTRAINT `recoverytokens_ibfk_1` FOREIGN KEY (`paciente_id`) REFERENCES `salud`.`Users` (`id_user`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `05_motivos_perdidas`
+  ADD CONSTRAINT `05_motivos_perdidas_ibfk_1` FOREIGN KEY (`toma_diaria_id`) REFERENCES `04_tomas_diarias` (`id_toma_diaria`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

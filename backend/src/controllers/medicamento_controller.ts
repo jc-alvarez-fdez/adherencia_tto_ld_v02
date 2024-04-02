@@ -1,4 +1,4 @@
-import express, { Application, Request, Response } from 'express';
+import { Application, Request, Response } from 'express';
 import Medicamento from '../models/medicamento_model';
 
 

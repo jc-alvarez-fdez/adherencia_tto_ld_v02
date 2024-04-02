@@ -1,4 +1,4 @@
-import express, { Application, Request, Response } from 'express';
+import { Application, Request, Response } from 'express';
 import Administracion from '../models/administracion_model';
 
 // Muestra todas las administraciones
